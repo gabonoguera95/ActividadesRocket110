@@ -315,16 +315,19 @@ footer{border-top:1px solid var(--line);padding:56px 0 48px;text-align:center}
      pend: 1 = dirección por definir
      ============================================================ */
   var EVENTOS = [
-    {d:'2026-09-26', t:'20:00', f:'03:00', n:'Caminata por Palermo', lab:'Punto de encuentro', dir:'Plaza Serrano', barrio:'Palermo', mapa:'Plaza Serrano, Palermo'},
-    {d:'2026-09-27', t:'16:00', f:'21:00', n:'Corrientes, Obelisco y Guerrín'},
+    {d:'2026-09-26', t:'18:00', f:'21:00', n:'Corrientes, Obelisco y Guerrín'},
+    {d:'2026-09-26', n:'Cumple Joan'},
+    {d:'2026-09-27', t:'16:00', n:'Comida en casa, dos familias'},
+    {d:'2026-09-27', t:'20:00', f:'03:00', n:'Caminata por Palermo', lab:'Punto de encuentro', dir:'Plaza Serrano', barrio:'Palermo', mapa:'Plaza Serrano, Palermo'},
     {d:'2026-09-28', t:'11:00', f:'20:00', n:'Plan autobús BA'},
-    {d:'2026-09-29', t:'18:30', n:'Práctica en la iglesia', lugar:'Iglesia San Benito Abad', dir:'Villanueva 905', barrio:'Las Cañitas', mapa:'Parroquia San Benito Abad, Villanueva 905'},
-    {d:'2026-09-29', t:'20:00', n:'Forno', nota:'Reserva', dir:'Maure 2200'},
+    {d:'2026-09-29', n:'Descanso'},
+    {d:'2026-09-30', t:'18:30', n:'Práctica en la iglesia', lugar:'Iglesia San Benito Abad', dir:'Villanueva 905', barrio:'Las Cañitas', mapa:'Parroquia San Benito Abad, Villanueva 905'},
+    {d:'2026-09-30', t:'20:00', n:'Forno', nota:'Reserva', dir:'Maure 2200'},
     {d:'2026-10-01', t:'11:00', n:'Cortejo de la novia', dir:'Fitz Roy 2965'},
-    {d:'2026-10-01', t:'13:00', n:'Cortejo del novio', dir:'Ciudad de la Paz 1387'},
+    {d:'2026-10-01', t:'14:00', n:'Cortejo del novio', dir:'Ciudad de la Paz 1387'},
     {d:'2026-10-01', t:'16:30', n:'Iglesia San Benito Abad', dir:'Villanueva 905', barrio:'Las Cañitas', mapa:'Parroquia San Benito Abad, Villanueva 905'},
     {d:'2026-10-01', t:'18:30', n:'Salón Piso Tres', dir:'Defensa 269, Piso 3', barrio:'San Telmo', mapa:'Defensa 269'},
-    {d:'2026-10-01', t:'01:30', n:'Boliche', nota:'Reserva', mad:1, pend:1}
+    {d:'2026-10-02', t:'21:00', n:'Rabieta', nota:'Reserva'}
   ];
 
   var MES = [2026, 8];           // septiembre 2026 (mes base 0)
@@ -346,8 +349,9 @@ footer{border-top:1px solid var(--line);padding:56px 0 48px;text-align:center}
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
   EVENTOS.forEach(function(e, i){
-    var hm = e.t.split(':'), p = parts(e.d), extra = e.mad ? 1 : 0;
     e.i = i;
+    if(!e.t){ e.k = -1; return; }
+    var hm = e.t.split(':'), p = parts(e.d), extra = e.mad ? 1 : 0;
     e.k = (+hm[0])*60 + (+hm[1]) + extra*1440;
     e.ini = baDate(p[0], p[1], p[2] + extra, +hm[0], +hm[1]);
     if(e.f){
@@ -389,7 +393,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 48px;text-align:center}
       dirMovil = '<span class="ev-dir">' + PIN + 'Dirección por definir</span>';
     }
     return '<li class="ev' + (conDir ? ' has-dir' : '') + '"' + (conDir ? ' tabindex="0"' : '') + '>' +
-      '<span class="ev-t">' + esc(e.t) + (e.f ? '&ndash;' + esc(e.f) : '') + (e.mad ? ' <em>madrugada</em>' : '') + '</span>' +
+      (e.t ? '<span class="ev-t">' + esc(e.t) + (e.f ? '&ndash;' + esc(e.f) : '') + (e.mad ? ' <em>madrugada</em>' : '') + '</span>' : '') +
       '<span class="ev-n">' + (conDir ? nombreConPin(e.n) : esc(e.n)) + '</span>' +
       (e.nota ? '<span class="ev-note">' + esc(e.nota) + '</span>' : '') +
       dirMovil + tip +
@@ -484,7 +488,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 48px;text-align:center}
   function updateNext(){
     var now = Date.now();
     var ahora = EVENTOS.filter(function(e){ return e.fin && e.ini <= now && now < e.fin; });
-    var prox = EVENTOS.filter(function(e){ return e.ini > now; }).sort(function(a,b){ return a.ini - b.ini; });
+    var prox = EVENTOS.filter(function(e){ return e.ini && e.ini > now; }).sort(function(a,b){ return a.ini - b.ini; });
     var html, sig;
 
     if(ahora.length){
